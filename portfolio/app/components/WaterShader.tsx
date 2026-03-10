@@ -42,14 +42,16 @@ export default function WaterShader() {
       mount!.appendChild(renderer.domElement);
 
       const scene = new T.Scene();
-      const camera = new T.PerspectiveCamera(
-        55,
-        mount!.clientWidth / mount!.clientHeight,
-        0.1,
-        200
+      const w = mount!.clientWidth;
+      const h = mount!.clientHeight;
+      const aspect = w / h;
+      const camera = new T.OrthographicCamera(
+        -aspect * PLANE_SZ / 2, aspect * PLANE_SZ / 2,
+        PLANE_SZ / 2, -PLANE_SZ / 2,
+        0.1, 200
       );
-      camera.position.set(0, 11, 9);
-      camera.lookAt(0, 0, -1);
+      camera.position.set(0, 50, 0);
+      camera.lookAt(0, 0, 0);
 
       const simCam = new T.OrthographicCamera(-1, 1, 1, -1, 0, 1);
       const simScene = new T.Scene();
@@ -155,8 +157,8 @@ export default function WaterShader() {
               varying vec3  vNormal;
               varying float vHeight;
               void main() {
-                vec3 V = normalize(vec3(0.0, 11.0, 9.0));
-                vec3 L = normalize(vec3(0.3,  1.0, 0.5));
+                vec3 V = normalize(vec3(0.0, 1.0, 0.0));
+                vec3 L = normalize(vec3(0.3, 1.0, 0.5));
                 float NdotV  = max(dot(vNormal, vec3(0.,1.,0.)), 0.0);
                 float fresnel = pow(1.0 - NdotV, 4.5);
                 vec3  H    = normalize(L + V);
@@ -229,9 +231,15 @@ export default function WaterShader() {
 
       const onResize = () => {
         if (!mount || !renderer) return;
-        camera.aspect = mount.clientWidth / mount.clientHeight;
+        const nw = mount.clientWidth;
+        const nh = mount.clientHeight;
+        const na = nw / nh;
+        camera.left   = -na * PLANE_SZ / 2;
+        camera.right  =  na * PLANE_SZ / 2;
+        camera.top    =  PLANE_SZ / 2;
+        camera.bottom = -PLANE_SZ / 2;
         camera.updateProjectionMatrix();
-        renderer.setSize(mount.clientWidth, mount.clientHeight);
+        renderer.setSize(nw, nh);
         renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
       };
       window.addEventListener("resize", onResize);
