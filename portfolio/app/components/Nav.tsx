@@ -35,7 +35,7 @@ export default function Nav() {
           color: "#f5f5f5",
         }}
       >
-        Hovinci
+        hovinci
         <span style={{ color: "#f5c518" }}>.</span>
       </a>
 

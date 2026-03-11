@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useEffect, useRef, useState } from "react";
 import { LangProvider, useLang } from "./LangContext";
 import Nav from "./Nav";
 
@@ -11,8 +12,7 @@ const WaterShader = dynamic(() => import("./WaterShader"), {
 // ─── i18n content ────────────────────────────────────────────────────────────
 const copy = {
   ja: {
-    heroSub: "ライター・Kindle出版者",
-    heroDesc: "言葉で世界を変える。毎日書き続ける創作者。",
+    heroDesc: "毎日つくる。書く、描く、築く。",
 
     worksTitle: "作品",
     kindle100Title: "100日で100冊Kindle出版",
@@ -23,6 +23,10 @@ const copy = {
     kindleListDesc:
       "Amazonで出版したKindle本の全ラインナップ。ビジネス・自己啓発・ライフスタイルなど幅広いジャンル。",
     kindleListLink: "Amazonで見る →",
+    habitBirdTitle: "HabitBird",
+    habitBirdDesc:
+      "ハビットバードは、毎日の習慣をかわいいひよこで可視化する習慣トラッカーです。プロジェクトごとに習慣を管理し、目標達成を楽しくサポートします。",
+    habitBirdLink: "アプリを見る →",
 
     noteTitle: "毎日note",
     noteDesc:
@@ -32,18 +36,17 @@ const copy = {
     membershipTitle: "メンバーシップ",
     membershipSubtitle: "ストーリーハッカー",
     membershipDesc:
-      "物語の力で人生を変える、クリエイターのためのコミュニティ。ライティングの技術から思考法まで、深く学べる場所。",
+      "物語の力で人生を変える、クリエイターのためのnoteメンバーシップコミュニティ。ライティングの技術から思考法まで、深く学べる場所。",
     membershipLink: "参加する →",
 
     snsTitle: "SNS",
-    threadsDesc: "日々の思考、読書記録、創作の裏側をThreadsで発信中。",
+    threadsDesc: "小説を書いて、人生を変えるためのアカウント。物語をつくる側に、毎日1％近づくヒントを発信中。",
     threadsLink: "フォローする →",
 
     footerText: "© 2025 Hovinci. All rights reserved.",
   },
   en: {
-    heroSub: "Writer · Kindle Publisher",
-    heroDesc: "Changing the world with words. A creator who writes every day.",
+    heroDesc: "Build every day. Write, Draw, Code.",
 
     worksTitle: "Works",
     kindle100Title: "100 Kindle Books in 100 Days",
@@ -54,6 +57,10 @@ const copy = {
     kindleListDesc:
       "Full lineup of Kindle books published on Amazon — business, self-improvement, lifestyle and more.",
     kindleListLink: "View on Amazon →",
+    habitBirdTitle: "HabitBird",
+    habitBirdDesc:
+      "HabitBird is a habit tracker that visualizes your daily habits with cute chicks. Manage habits by project and make achieving your goals fun.",
+    habitBirdLink: "View app →",
 
     noteTitle: "Daily note",
     noteDesc:
@@ -74,6 +81,80 @@ const copy = {
     footerText: "© 2025 Hovinci. All rights reserved.",
   },
 };
+
+// ─── Section nav (vertical line) ─────────────────────────────────────────────
+
+const SECTIONS = ["top", "works", "note", "membership", "sns"] as const;
+
+function SectionNav() {
+  const [active, setActive] = useState<string>("top");
+  const observerRef = useRef<IntersectionObserver | null>(null);
+
+  useEffect(() => {
+    observerRef.current = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+          }
+        }
+      },
+      { threshold: 0.4 }
+    );
+    SECTIONS.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observerRef.current!.observe(el);
+    });
+    return () => observerRef.current?.disconnect();
+  }, []);
+
+  return (
+    <div
+      style={{
+        position: "fixed",
+        right: "2rem",
+        top: "50%",
+        transform: "translateY(-50%)",
+        zIndex: 40,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 0,
+      }}
+    >
+      {/* 縦線 */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          bottom: 0,
+          left: "50%",
+          transform: "translateX(-50%)",
+          width: "1px",
+          background: "#333",
+        }}
+      />
+      {SECTIONS.map((id) => (
+        <a
+          key={id}
+          href={`#${id}`}
+          style={{
+            position: "relative",
+            zIndex: 1,
+            width: "8px",
+            height: "8px",
+            borderRadius: "50%",
+            background: active === id ? "#f5c518" : "#333",
+            margin: "12px 0",
+            display: "block",
+            transition: "background 0.3s",
+            flexShrink: 0,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 // ─── Section components ───────────────────────────────────────────────────────
 
@@ -120,18 +201,6 @@ function Hero() {
           userSelect: "none",
         }}
       >
-        <p
-          style={{
-            fontSize: "0.8125rem",
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: "#f5c518",
-            marginBottom: "1rem",
-            fontWeight: 700,
-          }}
-        >
-          {t.heroSub}
-        </p>
         <h1
           style={{
             fontSize: "clamp(3rem, 10vw, 8rem)",
@@ -142,7 +211,7 @@ function Hero() {
             marginBottom: "1.5rem",
           }}
         >
-          Hovinci
+          hovinci
           <span style={{ color: "#f5c518" }}>.</span>
         </h1>
         <p
@@ -156,6 +225,38 @@ function Hero() {
         </p>
       </div>
 
+      {/* Scroll indicator — アニメーション線のみ */}
+      <div
+        style={{
+          position: "absolute",
+          bottom: "2rem",
+          left: "50%",
+          transform: "translateX(-50%)",
+          zIndex: 2,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          pointerEvents: "none",
+        }}
+      >
+        <div
+          style={{
+            width: "1px",
+            height: "3rem",
+            background:
+              "linear-gradient(to bottom, rgba(245,197,24,0.8), transparent)",
+            animation: "scrollLine 1.8s ease-in-out infinite",
+          }}
+        />
+      </div>
+
+      <style>{`
+        @keyframes scrollLine {
+          0% { transform: scaleY(0); transform-origin: top; opacity: 1; }
+          50% { transform: scaleY(1); transform-origin: top; opacity: 1; }
+          100% { transform: scaleY(1); transform-origin: top; opacity: 0; }
+        }
+      `}</style>
     </section>
   );
 }
@@ -173,18 +274,6 @@ function Works() {
         margin: "0 auto",
       }}
     >
-      <p
-        style={{
-          fontSize: "0.75rem",
-          letterSpacing: "0.2em",
-          textTransform: "uppercase",
-          color: "#f5c518",
-          marginBottom: "1rem",
-          fontWeight: 700,
-        }}
-      >
-        {t.worksTitle}
-      </p>
       <h2
         style={{
           fontSize: "clamp(2.5rem, 6vw, 5rem)",
@@ -222,6 +311,15 @@ function Works() {
           link="https://www.amazon.co.jp/stores/%E3%83%9B%E3%83%B4%E3%82%A3%E3%83%B3%E3%83%81/author/B0DT3MZR3F?shoppingPortalEnabled=true"
           linkLabel={t.kindleListLink}
         />
+        {/* Card 3 */}
+        <WorkCard
+          number="03"
+          title={t.habitBirdTitle}
+          desc={t.habitBirdDesc}
+          link="https://habitbird.app/"
+          linkLabel={t.habitBirdLink}
+          image={lang === "ja" ? "/works/habitbird-ja.png" : "/works/habitbird-en.png"}
+        />
       </div>
     </section>
   );
@@ -233,12 +331,14 @@ function WorkCard({
   desc,
   link,
   linkLabel,
+  image,
 }: {
   number: string;
   title: string;
   desc: string;
   link: string;
   linkLabel: string;
+  image?: string;
 }) {
   return (
     <a
@@ -295,6 +395,26 @@ function WorkCard({
       >
         {desc}
       </p>
+      {image && (
+        <div
+          style={{
+            marginBottom: "2rem",
+            borderRadius: "8px",
+            overflow: "hidden",
+            border: "1px solid #222",
+          }}
+        >
+          <img
+            src={image}
+            alt={title}
+            style={{
+              width: "100%",
+              height: "auto",
+              display: "block",
+            }}
+          />
+        </div>
+      )}
       <span
         style={{
           fontSize: "0.8125rem",
@@ -332,18 +452,6 @@ function NoteSection() {
         }}
       >
         <div>
-          <p
-            style={{
-              fontSize: "0.75rem",
-              letterSpacing: "0.2em",
-              textTransform: "uppercase",
-              color: "#f5c518",
-              marginBottom: "1rem",
-              fontWeight: 700,
-            }}
-          >
-            note
-          </p>
           <h2
             style={{
               fontSize: "clamp(2rem, 5vw, 4rem)",
@@ -445,18 +553,6 @@ function Membership() {
       }}
     >
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <p
-          style={{
-            fontSize: "0.75rem",
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: "#f5c518",
-            marginBottom: "1rem",
-            fontWeight: 700,
-          }}
-        >
-          {t.membershipTitle}
-        </p>
         <div
           style={{
             display: "grid",
@@ -474,8 +570,11 @@ function Membership() {
               color: "#f5f5f5",
             }}
           >
-            {t.membershipSubtitle}
-            <span style={{ color: "#f5c518" }}>.</span>
+            {lang === "ja" ? (
+              <>ストーリー<br />ハッカー<span style={{ color: "#f5c518" }}>.</span></>
+            ) : (
+              <>{t.membershipSubtitle}<span style={{ color: "#f5c518" }}>.</span></>
+            )}
           </h2>
           <div>
             <p
@@ -538,18 +637,6 @@ function SNS() {
       }}
     >
       <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
-        <p
-          style={{
-            fontSize: "0.75rem",
-            letterSpacing: "0.2em",
-            textTransform: "uppercase",
-            color: "#f5c518",
-            marginBottom: "1rem",
-            fontWeight: 700,
-          }}
-        >
-          {t.snsTitle}
-        </p>
         <h2
           style={{
             fontSize: "clamp(2rem, 5vw, 4rem)",
@@ -649,7 +736,7 @@ function Footer() {
           letterSpacing: "-0.03em",
         }}
       >
-        Hovinci<span style={{ color: "#f5c518" }}>.</span>
+        hovinci<span style={{ color: "#f5c518" }}>.</span>
       </span>
       <span style={{ fontSize: "0.8125rem", color: "#555" }}>{t.footerText}</span>
     </footer>
@@ -663,6 +750,7 @@ export default function PageContent() {
     <LangProvider>
       <div style={{ minHeight: "100vh", background: "#0a0a0a" }}>
         <Nav />
+        <SectionNav />
         <Hero />
         <Works />
         <NoteSection />

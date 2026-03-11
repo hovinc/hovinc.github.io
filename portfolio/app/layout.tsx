@@ -17,11 +17,11 @@ const notoSansJP = Noto_Sans_JP({
 const GA_ID = "G-1G2HD1RW4X";
 
 export const metadata: Metadata = {
-  title: "Hovinci — ライター・Kindle出版者",
+  title: "hovinci",
   description:
     "100日で100冊Kindle出版、毎日note1500日継続中。ストーリーハッカーメンバーシップ運営。",
   openGraph: {
-    title: "Hovinci — ライター・Kindle出版者",
+    title: "hovinci",
     description:
       "100日で100冊Kindle出版、毎日note1500日継続中。ストーリーハッカーメンバーシップ運営。",
     locale: "ja_JP",

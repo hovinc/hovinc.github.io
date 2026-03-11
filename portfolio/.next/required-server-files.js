@@ -9,7 +9,7 @@ self.__SERVER_FILES_MANIFEST={
     "typedRoutes": false,
     "distDir": ".next",
     "cleanDistDir": true,
-    "assetPrefix": "",
+    "assetPrefix": "/ho-vinci/",
     "cacheMaxMemorySize": 52428800,
     "configOrigin": "next.config.ts",
     "useFileSystemPublicRoutes": true,
@@ -42,7 +42,7 @@ self.__SERVER_FILES_MANIFEST={
         256,
         384
       ],
-      "path": "/_next/image/",
+      "path": "/ho-vinci/_next/image/",
       "loader": "default",
       "loaderFile": "",
       "domains": [],
@@ -76,7 +76,7 @@ self.__SERVER_FILES_MANIFEST={
       "maxInactiveAge": 60000,
       "pagesBufferLength": 5
     },
-    "basePath": "",
+    "basePath": "/ho-vinci",
     "sassOptions": {},
     "trailingSlash": true,
     "i18n": null,
@@ -101,7 +101,7 @@ self.__SERVER_FILES_MANIFEST={
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "/home/hok/hovinci-jp/portfolio",
+    "outputFileTracingRoot": "/home/hok/ho-vinci/portfolio",
     "cacheComponents": false,
     "cacheLife": {
       "default": {
@@ -294,11 +294,11 @@ self.__SERVER_FILES_MANIFEST={
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.ts",
     "turbopack": {
-      "root": "/home/hok/hovinci-jp/portfolio"
+      "root": "/home/hok/ho-vinci/portfolio"
     },
     "distDirRoot": ".next"
   },
-  "appDir": "/home/hok/hovinci-jp/portfolio",
+  "appDir": "/home/hok/ho-vinci/portfolio",
   "relativeAppDir": "",
   "files": [
     ".next/routes-manifest.json",

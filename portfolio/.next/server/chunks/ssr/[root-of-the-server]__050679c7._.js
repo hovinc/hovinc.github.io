@@ -3,6 +3,6 @@ module.exports=[21290,a=>{a.v({className:"inter_5901b7c6-module__ec5Qua__classNa
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', '${h}');
-          `})]}),(0,b.jsx)("body",{className:"antialiased",children:a})]})}a.s(["default",()=>i,"metadata",0,{title:"Hovinci — ライター・Kindle出版者",description:"100日で100冊Kindle出版、毎日note1500日継続中。ストーリーハッカーメンバーシップ運営。",openGraph:{title:"Hovinci — ライター・Kindle出版者",description:"100日で100冊Kindle出版、毎日note1500日継続中。ストーリーハッカーメンバーシップ運営。",locale:"ja_JP",type:"website"}}],33290)}];
+          `})]}),(0,b.jsx)("body",{className:"antialiased",children:a})]})}a.s(["default",()=>i,"metadata",0,{title:"hovinci",description:"100日で100冊Kindle出版、毎日note1500日継続中。ストーリーハッカーメンバーシップ運営。",openGraph:{title:"hovinci",description:"100日で100冊Kindle出版、毎日note1500日継続中。ストーリーハッカーメンバーシップ運営。",locale:"ja_JP",type:"website"}}],33290)}];
 
 //# sourceMappingURL=%5Broot-of-the-server%5D__050679c7._.js.map
