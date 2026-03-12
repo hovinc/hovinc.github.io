@@ -16,6 +16,11 @@ const notoSansJP = Noto_Sans_JP({
 
 const GA_ID = "G-1G2HD1RW4X";
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
   title: "hovinci",
   description:

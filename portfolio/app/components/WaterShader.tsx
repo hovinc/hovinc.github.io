@@ -37,25 +37,26 @@ export default function WaterShader() {
 
       renderer = new T.WebGLRenderer({ antialias: true, alpha: true });
       renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      // window.innerWidth/Height を使うことで、DOMサイズに依存せず常に全幅を取得する
       const initW = window.innerWidth;
       const initH = window.innerHeight;
-      renderer.setSize(initW, initH);
+      renderer.setSize(initW, initH, false);
       renderer.setClearColor(0x000000, 0);
       const canvas = renderer.domElement;
       canvas.style.position = "absolute";
       canvas.style.top = "0";
       canvas.style.left = "0";
-      canvas.style.width = "100%";
+      canvas.style.width = "100vw";
       canvas.style.height = "100%";
       mount!.appendChild(canvas);
 
       const scene = new T.Scene();
-      const w = initW;
-      const h = initH;
-      const aspect = w / h;
+      const aspect = initW / initH;
+      const halfW = PLANE_SZ / 2;
+      const halfH = halfW / aspect;
       const camera = new T.OrthographicCamera(
-        -aspect * PLANE_SZ / 2, aspect * PLANE_SZ / 2,
-        PLANE_SZ / 2, -PLANE_SZ / 2,
+        -halfW, halfW,
+        halfH, -halfH,
         0.1, 200
       );
       camera.position.set(0, 50, 0);
@@ -240,15 +241,25 @@ export default function WaterShader() {
         const nw = window.innerWidth;
         const nh = window.innerHeight;
         const na = nw / nh;
-        camera.left   = -na * PLANE_SZ / 2;
-        camera.right  =  na * PLANE_SZ / 2;
-        camera.top    =  PLANE_SZ / 2;
-        camera.bottom = -PLANE_SZ / 2;
+        // 縦縮小で画面が横長になっても波が画面を埋めるよう、
+        // アスペクト比に応じてカメラ高さも拡縮する（水平方向を常に固定幅でカバー）
+        const halfW = PLANE_SZ / 2;
+        const halfH = halfW / na;
+        camera.left   = -halfW;
+        camera.right  =  halfW;
+        camera.top    =  halfH;
+        camera.bottom = -halfH;
         camera.updateProjectionMatrix();
-        renderer.setSize(nw, nh);
+        renderer.setSize(nw, nh, false);
         renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
       };
       window.addEventListener("resize", onResize);
+
+      // ResizeObserver でコンテナサイズの変化を監視し、常に全幅表示を維持する
+      const resizeObserver = new ResizeObserver(() => onResize());
+      const mountEl: HTMLDivElement = mount!;
+      if (mountEl.parentElement) resizeObserver.observe(mountEl.parentElement);
+      resizeObserver.observe(mountEl);
 
       let nextAmbient = 1.8;
       function spawnAmbient(t: number) {
@@ -284,6 +295,9 @@ export default function WaterShader() {
 
       animate();
 
+      // 1フレーム待ってからリサイズを実行し、確実にDOMサイズを反映する
+      requestAnimationFrame(onResize);
+
       // Store cleanup fn on the DOM node
       (
         mount as HTMLDivElement & { _wCleanup?: () => void }
@@ -293,6 +307,7 @@ export default function WaterShader() {
         mount!.removeEventListener("click", onClick);
         mount!.removeEventListener("touchmove", onTouch);
         window.removeEventListener("resize", onResize);
+        resizeObserver.disconnect();
         renderer.dispose();
         ping.dispose();
         pong.dispose();
@@ -317,7 +332,7 @@ export default function WaterShader() {
         position: "absolute",
         top: 0,
         left: 0,
-        width: "100%",
+        width: "100vw",
         height: "100%",
         cursor: "crosshair",
       }}
